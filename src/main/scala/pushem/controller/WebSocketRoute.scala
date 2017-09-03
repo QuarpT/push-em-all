@@ -5,7 +5,7 @@ import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server.Route
 import akka.stream.scaladsl.{Flow, Sink, Source}
 import com.typesafe.scalalogging.LazyLogging
-import pushem.context.Setup._
+import pushem.context.Context._
 
 object WebSocketRoute extends LazyLogging {
 

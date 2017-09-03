@@ -1,7 +1,7 @@
 package pushem
 
 import akka.http.scaladsl.Http
-import pushem.context.Setup._
+import pushem.context.Context._
 import pushem.controller.{Routes, WebSocketRoute}
 
 object Core {

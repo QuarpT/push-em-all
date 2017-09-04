@@ -1,13 +1,14 @@
 package pushem.controller
 
-import akka.http.scaladsl.model.ws.{BinaryMessage, Message, TextMessage}
+import akka.http.scaladsl.model.HttpResponse
+import akka.http.scaladsl.model.ws.{BinaryMessage, Message, TextMessage, UpgradeToWebSocket}
 import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server.Route
 import akka.stream.scaladsl.{Flow, Sink, Source}
 import com.typesafe.scalalogging.LazyLogging
 import pushem.context.Context._
 
-object WebSocketRoute extends LazyLogging {
+object WebSocketRoutes extends LazyLogging {
 
   val greeterWebSocketService = Flow[Message].mapConcat {
     case tm: TextMessage => TextMessage(Source.single("Hello ") ++ tm.textStream) :: Nil
@@ -22,8 +23,15 @@ object WebSocketRoute extends LazyLogging {
     }
   }
 
-  val webSocketRoute: Route = path("greeter") {
-    handleWebSocketMessages(greeterWebSocketService)
+  val webSocketRoute: Route = path("ws") {
+    extractRequest { request =>
+      complete(
+        request.header[UpgradeToWebSocket] match {
+          case Some(upgrade) => upgrade.handleMessages(greeterWebSocketService)
+          case None => HttpResponse(400, entity = "Not a valid websocket request!")
+        }
+      )
+    }
   }
 
 }

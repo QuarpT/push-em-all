@@ -6,6 +6,7 @@ import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server.Route
 import akka.stream.scaladsl.{Flow, Sink, Source}
 import com.typesafe.scalalogging.LazyLogging
+import pushem.actor.ClientActor
 import pushem.context.Context._
 
 object WebSocketRoutes extends LazyLogging {
@@ -27,7 +28,9 @@ object WebSocketRoutes extends LazyLogging {
     extractRequest { request =>
       complete(
         request.header[UpgradeToWebSocket] match {
-          case Some(upgrade) => upgrade.handleMessages(greeterWebSocketService)
+          case Some(upgrade) =>
+            val sinkSource = ClientActor.create()
+            upgrade.handleMessagesWithSinkSource(sinkSource.sink, sinkSource.source)
           case None => HttpResponse(400, entity = "Not a valid websocket request!")
         }
       )

@@ -31,7 +31,6 @@ class ClientActor extends Actor with LazyLogging with Hashing {
 
     case s @ Subscribe(channel, _) =>
       logger.debug(s"Subscribe $s")
-      throw new Exception("ahh")
       mediator ! DistributedPubSubMediator.Subscribe(sha256(channel), self)
 
     case s @ UnSubscribe(channel, _) =>

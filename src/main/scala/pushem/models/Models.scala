@@ -1,18 +1,46 @@
 package pushem.models
 
-import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport
+import pushem.util.EnrichedJson
 import spray.json.{DefaultJsonProtocol, JsValue, JsonFormat, _}
 
-import scala.util.Try
-
-trait PublishSubscribeProtocol extends SprayJsonSupport with DefaultJsonProtocol {
-  implicit val subscribeFormat: JsonFormat[Subscribe] = jsonFormat1(Subscribe.apply)
-  implicit val publishFormat: JsonFormat[Publish] = jsonFormat3(Publish.apply)
-  implicit val pubSubFormat: JsonReader[PublishSubscribe] = json => Try(json.convertTo[Publish]).getOrElse(json.convertTo[Subscribe])
+trait PublishSubscribeProtocol extends EnrichedJson with DefaultJsonProtocol {
+  implicit val pubSubFormat: JsonReader[PubSub] = { json =>
+    json.asOpt[JsObject].flatMap(_.fields.get("type").flatMap(_.asOpt[String])) match {
+      case Some(Subscribe.messageType) => json.convertTo[Subscribe]
+      case Some(Publish.messageType) => json.convertTo[Publish]
+      case Some(UnSubscribe.messageType) => json.convertTo[UnSubscribe]
+      case _ => throw new Exception(s"Unable to parse $json to PubSub")
+    }
+  }
 }
 
-sealed trait PublishSubscribe
+sealed trait PubSub
 
-case class Subscribe(channel: String) extends PublishSubscribe
+case class Subscribe(channel: String, `type`: String = Subscribe.messageType) extends PubSub
 
-case class Publish(channel: String, event: String, data: JsValue) extends PublishSubscribe
+object Subscribe extends DefaultJsonProtocol  {
+  val messageType = "subscribe"
+  implicit val subscribeFormat: JsonFormat[Subscribe] = jsonFormat2(Subscribe.apply)
+}
+
+case class Publish(channel: String, event: String, data: JsValue, `type`: String = Publish.messageType) extends PubSub
+
+object Publish extends DefaultJsonProtocol {
+  val messageType = "publish"
+  implicit val publishFormat: JsonFormat[Publish] = jsonFormat4(Publish.apply)
+}
+
+case class UnSubscribe(channel: String, `type`: String = UnSubscribe.messageType) extends PubSub
+
+object UnSubscribe extends DefaultJsonProtocol  {
+  val messageType = "unsubscribe"
+  implicit val subscribeFormat: JsonFormat[UnSubscribe] = jsonFormat2(UnSubscribe.apply)
+}
+
+case class ChannelMessage(channel: String, event: String, data: JsValue, `type`: String = ChannelMessage.messageType)
+
+object ChannelMessage extends DefaultJsonProtocol {
+  val messageType = "channelMessage"
+  implicit val channelMessageFormat: JsonFormat[ChannelMessage] = jsonFormat4(ChannelMessage.apply)
+  def from(publish: Publish) = ChannelMessage(publish.channel, publish.event, publish.data)
+}

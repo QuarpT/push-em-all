@@ -7,23 +7,23 @@ Define cluster seeds nodes in [application.conf](./push-em-all/src/main/resource
 
 ### WS Protocol
 
-###### Send
+##### Send
 
-Publish
+###### Publish
 
 ```json
 { "type": "publish", "channel": "channel_name", "event": "event_name", "data": {} }
 ```
 
-Subscribe
+###### Subscribe
 
 ```json
 { "type": "subscribe", "channel": "channel_name" }
 ```
 
-###### Receive
+##### Receive
 
-Message
+###### Message
 
 ```json
 { "channel": "channel_name", "event": "event_name", "data": {} }

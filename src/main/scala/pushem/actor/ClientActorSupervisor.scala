@@ -5,10 +5,10 @@ import akka.actor.{Actor, OneForOneStrategy, Props}
 import akka.pattern.ask
 import com.typesafe.scalalogging.LazyLogging
 import pushem.context.Context
-
 import scala.concurrent.Future
 import scala.concurrent.duration._
 import scala.util.control.NonFatal
+import scala.language.postfixOps
 
 class ClientActorSupervisor extends Actor with LazyLogging {
   import ClientActorSupervisor._

@@ -1,4 +1,4 @@
-package ClientActorTest.pushem
+package pushem.actor
 
 import akka.actor.{ActorSystem, Props}
 import akka.cluster.pubsub.{DistributedPubSub, DistributedPubSubMediator}

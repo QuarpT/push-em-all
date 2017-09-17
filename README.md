@@ -5,7 +5,7 @@ using Akka Cluster. Inspired by the hosted service Pusher https://pusher.com
 
 Define cluster seeds nodes in [application.conf](./push-em-all/src/main/resources/application.conf)
 
-### WS Protocol
+### WebSocket Protocol
 
 #### Send
 

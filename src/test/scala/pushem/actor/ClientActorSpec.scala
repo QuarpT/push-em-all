@@ -5,7 +5,6 @@ import akka.cluster.pubsub.{DistributedPubSub, DistributedPubSubMediator}
 import akka.http.scaladsl.model.ws.TextMessage
 import akka.testkit.{ImplicitSender, TestActorRef, TestKit, TestProbe}
 import org.scalatest._
-import pushem.actor.ClientActor
 import pushem.models.{ChannelMessage, Publish, Subscribe, UnSubscribe}
 import pushem.util.Hashing
 import spray.json.{JsObject, JsString}
@@ -25,7 +24,7 @@ class ClientActorSpec extends TestKit(ActorSystem("ClientActor")) with ImplicitS
     val clientActor = system.actorOf(Props[ClientActor])
     clientActor ! sourceActorProbe.ref
     clientActor ! channelMessage
-    sourceActorProbe.expectMsg(TextMessage.Strict("""{"channel":"channel","event":"event","data":{"field":"value"},"type":"channelMessage"}"""))
+    sourceActorProbe.expectMsg(TextMessage.Strict("""{"channel":"channel","event":"event","data":{"field":"value"}}"""))
   }
 
   it should "publish messages to DistributedPubSubMediator" in {
@@ -54,7 +53,7 @@ class ClientActorSpec extends TestKit(ActorSystem("ClientActor")) with ImplicitS
     clientActor ! subscribeMessage
 
     mediator ! DistributedPubSubMediator.Publish(sha256("channel"), channelMessage)
-    sourceActorProbe.expectMsg(TextMessage.Strict("""{"channel":"channel","event":"event","data":{"field":"value"},"type":"channelMessage"}"""))
+    sourceActorProbe.expectMsg(TextMessage.Strict("""{"channel":"channel","event":"event","data":{"field":"value"}}"""))
   }
 
   it should "not receive messages after unsubscribing" in {

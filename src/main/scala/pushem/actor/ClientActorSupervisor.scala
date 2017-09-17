@@ -7,8 +7,8 @@ import com.typesafe.scalalogging.LazyLogging
 import pushem.context.Context
 import scala.concurrent.Future
 import scala.concurrent.duration._
-import scala.util.control.NonFatal
 import scala.language.postfixOps
+import scala.util.control.NonFatal
 
 class ClientActorSupervisor extends Actor with LazyLogging {
   import ClientActorSupervisor._

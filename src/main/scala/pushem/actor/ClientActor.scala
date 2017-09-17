@@ -32,7 +32,7 @@ class ClientActor extends Actor with LazyLogging with Hashing {
       logger.debug(s"Publish $p")
       mediator ! DistributedPubSubMediator.Publish(sha256(channel), ChannelMessage.from(p))
 
-    case m @ ChannelMessage(_, _, _, _) =>
+    case m @ ChannelMessage(_, _, _) =>
       logger.debug(m.toString)
       wsSend.foreach(_ ! TextMessage(m.toJson.compactPrint))
 

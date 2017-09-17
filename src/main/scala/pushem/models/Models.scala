@@ -37,10 +37,10 @@ object UnSubscribe extends DefaultJsonProtocol  {
   implicit val subscribeFormat: JsonFormat[UnSubscribe] = jsonFormat2(UnSubscribe.apply)
 }
 
-case class ChannelMessage(channel: String, event: String, data: JsValue, `type`: String = ChannelMessage.messageType)
+case class ChannelMessage(channel: String, event: String, data: JsValue)
 
 object ChannelMessage extends DefaultJsonProtocol {
   val messageType = "channelMessage"
-  implicit val channelMessageFormat: JsonFormat[ChannelMessage] = jsonFormat4(ChannelMessage.apply)
+  implicit val channelMessageFormat: JsonFormat[ChannelMessage] = jsonFormat3(ChannelMessage.apply)
   def from(publish: Publish) = ChannelMessage(publish.channel, publish.event, publish.data)
 }
